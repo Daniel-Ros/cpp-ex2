@@ -4,7 +4,7 @@
 #include <array>
 #include <string>
 /**
- * Auther: Daniel Rosenberg
+ * Author: Daniel Rosenberg
  *
  * All test are written in such manner to provide the most covarge that i s[]
  */
@@ -117,10 +117,28 @@ TEST_CASE("Usage test") {
     notebook.erase(1, 0, 0, ariel::Direction::Vertical, 5);
     CHECK(notebook.read(1, 0, 0, ariel::Direction::Vertical, 5) == "~~~~~");
   }
+
+  // checks to see that the string should be legal that means all character in the string are between 33-126
+  for (int i = 0; i < 33; i++)
+  {
+    std::string str (1,i);  // makes a stirng with the size of 1 and the ascii value of 0-33
+    CHECK_THROWS(notebook.write(2,0,i,ariel::Direction::Horizontal,str));
+    CHECK_THROWS(notebook.write(2,1,i,ariel::Direction::Vertical,str));
+  }
+
+  for (int i = 127; i < 256; i++)
+  {
+    std::string str (1,i);  // makes a stirng with the size of 1 and the ascii value of 0-33
+    CHECK_THROWS(notebook.write(2,3,i,ariel::Direction::Horizontal,str));
+    CHECK_THROWS(notebook.write(2,4,i,ariel::Direction::Vertical,str));
+  }
+  
 }
+
 // using the stress test to write a lot of data and checking that everything is
 // fine and working
 TEST_CASE("Stress test") {
+  
   ariel::Notebook notebook;
   for (int i = 0; i < 1000; i++) {
     CHECK(notebook.read(i, i, 0, ariel::Direction::Horizontal, 5) == "_____");
@@ -135,6 +153,7 @@ TEST_CASE("Stress test") {
   for (int i = 0; i < 1000; i++) {
     CHECK(notebook.read(0, i, 0, ariel::Direction::Horizontal, 100) == line);
   }
+
   line = fullLine('~');
 
   for (int i = 0; i < 1000; i++) {
@@ -154,6 +173,7 @@ TEST_CASE("Stress test") {
   for (int i = 0; i < 1000; i++) {
     CHECK(notebook.read(1, i, 0, ariel::Direction::Vertical, 100) == line);
   }
+
   line = fullLine('~');
 
   for (int i = 0; i < 1000; i++) {
